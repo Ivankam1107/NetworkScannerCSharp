@@ -31,13 +31,14 @@ namespace NetworkScanner
             tabControl1.TabPages[0].Controls.AddRange(labels);
             textBox1.Select();
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             init();
-
+            GetSubnetHistory(textBox1.Text);
         }
-        public List<List<Dictionary<string, dynamic>>> ExistIPs;
+        public Dictionary<string, Dictionary<string,Dictionary<string, SortedSet<dynamic>>>> HISTORY;
+        public Dictionary<string, Dictionary<string, SortedSet<dynamic>>> CURRENT;
+        public Dictionary<string, Dictionary<string, SortedSet<dynamic>>> SUBNET;
         private void init()
         {
             CNotExist = ColorNotExist.BackColor;
@@ -48,7 +49,20 @@ namespace NetworkScanner
             PortTimeout = Convert.ToInt32(numericUpDown2.Value);
             labels = new Label[256];
             tooltips = new ToolTip[256];
-            ExistIPs = new List<List<Dictionary<string, dynamic>>>();
+            HISTORY = new Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>();
+            CURRENT = new Dictionary<string, Dictionary<string, SortedSet<dynamic>>>();
+            if (File.Exists(textBox2.Text))
+            {
+                try
+                {
+                    string json = File.ReadAllText(textBox2.Text);
+                    HISTORY = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>>(json);    
+                }
+                catch
+                {
+
+                }
+            }
             portList = new List<int>();
             openConfig();
             foreach (var item in listBox1.Items)
@@ -60,14 +74,85 @@ namespace NetworkScanner
                 labels[i] = new Label();
                 tooltips[i] = new ToolTip();
                 /*existIPs.Add(new ExistIP());*/
-                ExistIPs.Add(new List<Dictionary<string, dynamic>>() { new Dictionary<string, dynamic>()});
                 labels[i].Text = i.ToString();
                 labels[i].Location = new Point(28 + i % 10 * 30, 10 + (i / 10) * 20); // for example
                 labels[i].AutoSize = true;
                 labels[i].DoubleClick += new EventHandler(Label_Click);
             }
         }
-        
+        public void GetSubnetHistory(string ip)
+        {
+            string subnet = IPPrefix(ip);
+            try
+            {
+                SUBNET = HISTORY[subnet];
+                
+            }
+            catch
+            {
+
+            }
+            Console.WriteLine(JsonConvert.SerializeObject(SUBNET));
+        }
+
+        public void MergeCurrHistory(string ip)
+        {
+            //Current For Test
+            //string tempJson = "{\"192.168.1.2\":{\"Hostname\":[\"iamhost\"],\"PortAlive\":[22,4431]}}";
+            //CURRENT = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>(tempJson);
+            ////////////////////////////
+            string subnet = IPPrefix(ip);
+            try
+            {
+                HISTORY.Add(subnet, new Dictionary<string, Dictionary<string, SortedSet<dynamic>>>());
+            }
+            catch
+            {
+
+            }
+            foreach (string IP in CURRENT.Keys)
+            {
+                try
+                {
+                    HISTORY[subnet].Add(IP, new Dictionary<string, SortedSet<dynamic>>());
+                }
+                catch
+                {
+
+                }
+                foreach (string Key in CURRENT[IP].Keys)
+                {
+                    try
+                    {
+                        HISTORY[subnet][IP].Add(Key, new SortedSet<dynamic>());
+                    }
+                    catch
+                    {
+
+                    }
+                    foreach (var value in CURRENT[IP][Key])
+                    {
+                        try
+                        {
+                            HISTORY[subnet][IP][Key].Add(value);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                }
+            }
+            try
+            {
+                File.WriteAllText(textBox2.Text, JsonConvert.SerializeObject(HISTORY));
+            }
+            catch
+            {
+
+            }
+        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             foreach(var port in listBox1.Items)
@@ -209,10 +294,24 @@ namespace NetworkScanner
                 writer.WriteElementString("colorHasARP", ColorHasARP.BackColor.ToArgb().ToString());
                 writer.WriteElementString("colorPingSuccess", ColorPingSuccess.BackColor.ToArgb().ToString());
                 writer.WriteElementString("colorPortAlive", ColorPortAlive.BackColor.ToArgb().ToString());
+                writer.WriteElementString("colorDifferentHistory", ColorDifferentHistory.BackColor.ToArgb().ToString());
                 writer.WriteElementString("history", textBox2.Text);
                 writer.WriteEndElement();
                 writer.Flush();
             }
+        }
+        
+        private dynamic GetXmlValue(XmlNodeList nodelist,string key)
+        {
+            try
+            {
+                return Convert.ToInt32(nodelist[0].SelectSingleNode(key)?.InnerText);
+            }
+            catch
+            {
+                return nodelist[0].SelectSingleNode(key)?.InnerText;
+            }
+            
         }
         private bool openConfig()
         {
@@ -221,6 +320,7 @@ namespace NetworkScanner
                 string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "NetworkScanner");
                 string filename = @"\Setting.xml";
                 XmlDocument doc = new XmlDocument();
+                Dictionary<string, string> config = new Dictionary<string, string>();
                 doc.Load(path+filename);
                 XmlNodeList nodelist = doc.SelectNodes("/Setting");
                 string[] ports = nodelist[0].SelectSingleNode("portList").InnerText.Split(',');
@@ -229,13 +329,14 @@ namespace NetworkScanner
                 {
                     listBox1.Items.Add(port);
                 }
-                numericUpDown1.Value = Convert.ToInt32(nodelist[0].SelectSingleNode("pingTimeout").InnerText);
-                numericUpDown2.Value = Convert.ToInt32(nodelist[0].SelectSingleNode("portTimeout").InnerText);
-                ColorNotExist.BackColor = Color.FromArgb(Convert.ToInt32(nodelist[0].SelectSingleNode("colorNotExist").InnerText));
-                ColorHasARP.BackColor = Color.FromArgb(Convert.ToInt32(nodelist[0].SelectSingleNode("colorHasARP").InnerText));
-                ColorPingSuccess.BackColor = Color.FromArgb(Convert.ToInt32(nodelist[0].SelectSingleNode("colorPingSuccess").InnerText));
-                ColorPortAlive.BackColor = Color.FromArgb(Convert.ToInt32(nodelist[0].SelectSingleNode("colorPortAlive").InnerText));
-                textBox2.Text = nodelist[0].SelectSingleNode("history").InnerText;
+                numericUpDown1.Value = (GetXmlValue(nodelist, "pingTimeout") != 0) ? GetXmlValue(nodelist, "pingTimeout"): numericUpDown1.Value;
+                numericUpDown2.Value = (GetXmlValue(nodelist, "portTimeout") != 0) ? GetXmlValue(nodelist, "portTimeout"): numericUpDown2.Value;
+                ColorNotExist.BackColor = (GetXmlValue(nodelist, "colorNotExist") != 0) ? Color.FromArgb(GetXmlValue(nodelist, "colorNotExist")) : ColorNotExist.BackColor;
+                ColorHasARP.BackColor = (GetXmlValue(nodelist, "colorHasARP") != 0) ? Color.FromArgb(GetXmlValue(nodelist, "colorHasARP")) : ColorHasARP.BackColor;
+                ColorPingSuccess.BackColor = (GetXmlValue(nodelist, "colorPingSuccess") != 0) ? Color.FromArgb(GetXmlValue(nodelist, "colorPingSuccess")) : ColorPingSuccess.BackColor;
+                ColorPortAlive.BackColor = (GetXmlValue(nodelist, "colorPortAlive") != 0) ? Color.FromArgb(GetXmlValue(nodelist, "colorPortAlive")) : ColorPortAlive.BackColor;
+                ColorDifferentHistory.BackColor = (GetXmlValue(nodelist, "colorDifferentHistory") != 0) ? Color.FromArgb(GetXmlValue(nodelist, "colorDifferentHistory")) : ColorDifferentHistory.BackColor;
+                textBox2.Text = (GetXmlValue(nodelist, "histroy") != 0) ? GetXmlValue(nodelist, "histroy") : textBox2.Text;
             }
             catch
             {
