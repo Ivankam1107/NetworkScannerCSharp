@@ -63,6 +63,8 @@ namespace NetworkScanner
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.label11 = new System.Windows.Forms.Label();
+            this.ColorDifferentHistory = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -75,6 +77,7 @@ namespace NetworkScanner
             ((System.ComponentModel.ISupportInitialize)(this.ColorPingSuccess)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorHasARP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorNotExist)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -186,7 +189,7 @@ namespace NetworkScanner
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(147, 20);
             this.textBox2.TabIndex = 24;
-            this.textBox2.Text = ".\\History.csv";
+            this.textBox2.Text = ".\\History.json";
             // 
             // label10
             // 
@@ -364,6 +367,8 @@ namespace NetworkScanner
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.ColorDifferentHistory);
+            this.groupBox1.Controls.Add(this.label11);
             this.groupBox1.Controls.Add(this.ColorPortAlive);
             this.groupBox1.Controls.Add(this.ColorPingSuccess);
             this.groupBox1.Controls.Add(this.ColorHasARP);
@@ -374,7 +379,7 @@ namespace NetworkScanner
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Location = new System.Drawing.Point(6, 226);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(157, 107);
+            this.groupBox1.Size = new System.Drawing.Size(157, 130);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Color:";
@@ -430,7 +435,7 @@ namespace NetworkScanner
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(26, 16);
+            this.label4.Location = new System.Drawing.Point(18, 16);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(52, 13);
             this.label4.TabIndex = 17;
@@ -439,7 +444,7 @@ namespace NetworkScanner
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(26, 60);
+            this.label7.Location = new System.Drawing.Point(18, 60);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(75, 13);
             this.label7.TabIndex = 16;
@@ -448,7 +453,7 @@ namespace NetworkScanner
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 82);
+            this.label6.Location = new System.Drawing.Point(18, 82);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 13);
             this.label6.TabIndex = 15;
@@ -457,7 +462,7 @@ namespace NetworkScanner
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(26, 38);
+            this.label5.Location = new System.Drawing.Point(18, 38);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 14;
@@ -477,6 +482,26 @@ namespace NetworkScanner
             this.openFileDialog1.FilterIndex = 2;
             this.openFileDialog1.InitialDirectory = ".\\";
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(18, 105);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(85, 13);
+            this.label11.TabIndex = 21;
+            this.label11.Text = "Different History:";
+            // 
+            // ColorDifferentHistory
+            // 
+            this.ColorDifferentHistory.BackColor = System.Drawing.Color.Orange;
+            this.ColorDifferentHistory.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.ColorDifferentHistory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ColorDifferentHistory.Location = new System.Drawing.Point(104, 103);
+            this.ColorDifferentHistory.Name = "ColorDifferentHistory";
+            this.ColorDifferentHistory.Size = new System.Drawing.Size(19, 18);
+            this.ColorDifferentHistory.TabIndex = 22;
+            this.ColorDifferentHistory.TabStop = false;
             // 
             // Form1
             // 
@@ -503,6 +528,7 @@ namespace NetworkScanner
             ((System.ComponentModel.ISupportInitialize)(this.ColorPingSuccess)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorHasARP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorNotExist)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -543,6 +569,8 @@ namespace NetworkScanner
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.PictureBox ColorDifferentHistory;
+        private System.Windows.Forms.Label label11;
     }
 }
 
