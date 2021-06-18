@@ -29,12 +29,20 @@ namespace NetworkScanner
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
@@ -52,6 +60,8 @@ namespace NetworkScanner
             this.button2 = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ColorDifferentHistory = new System.Windows.Forms.PictureBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.ColorPortAlive = new System.Windows.Forms.PictureBox();
             this.ColorPingSuccess = new System.Windows.Forms.PictureBox();
             this.ColorHasARP = new System.Windows.Forms.PictureBox();
@@ -63,21 +73,21 @@ namespace NetworkScanner
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.label11 = new System.Windows.Forms.Label();
-            this.ColorDifferentHistory = new System.Windows.Forms.PictureBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorPortAlive)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorPingSuccess)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorHasARP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorNotExist)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -97,28 +107,68 @@ namespace NetworkScanner
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(348, 597);
+            this.tabControl1.Size = new System.Drawing.Size(348, 606);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.progressBar1);
+            this.tabPage1.BackColor = System.Drawing.Color.Transparent;
+            this.tabPage1.Controls.Add(this.textBox3);
+            this.tabPage1.Controls.Add(this.checkBox3);
+            this.tabPage1.Controls.Add(this.checkBox2);
+            this.tabPage1.Controls.Add(this.checkBox1);
             this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(340, 571);
+            this.tabPage1.Size = new System.Drawing.Size(340, 580);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Scan";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // progressBar1
+            // textBox3
             // 
-            this.progressBar1.Location = new System.Drawing.Point(237, 532);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(100, 23);
-            this.progressBar1.TabIndex = 6;
+            this.textBox3.Location = new System.Drawing.Point(188, 556);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(147, 20);
+            this.textBox3.TabIndex = 10;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Checked = true;
+            this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox3.Location = new System.Drawing.Point(138, 558);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(52, 17);
+            this.checkBox3.TabIndex = 9;
+            this.checkBox3.Text = "DNS:";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Checked = true;
+            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox2.Location = new System.Drawing.Point(87, 558);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(45, 17);
+            this.checkBox2.TabIndex = 8;
+            this.checkBox2.Text = "Port";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(34, 558);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(47, 17);
+            this.checkBox1.TabIndex = 7;
+            this.checkBox1.Text = "Ping";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
@@ -129,6 +179,7 @@ namespace NetworkScanner
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox3);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.label8);
             this.tabPage2.Controls.Add(this.numericUpDown3);
@@ -144,10 +195,48 @@ namespace NetworkScanner
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(340, 571);
+            this.tabPage2.Size = new System.Drawing.Size(340, 580);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Option";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.label12);
+            this.groupBox3.Controls.Add(this.comboBox1);
+            this.groupBox3.Location = new System.Drawing.Point(6, 472);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(316, 107);
+            this.groupBox3.TabIndex = 28;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Interface:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 66);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(52, 13);
+            this.label13.TabIndex = 2;
+            this.label13.Text = "Gateway:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 43);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(20, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "IP:";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(6, 19);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(197, 21);
+            this.comboBox1.TabIndex = 0;
             // 
             // groupBox2
             // 
@@ -156,7 +245,7 @@ namespace NetworkScanner
             this.groupBox2.Controls.Add(this.textBox2);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Location = new System.Drawing.Point(6, 362);
+            this.groupBox2.Location = new System.Drawing.Point(6, 361);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(316, 107);
             this.groupBox2.TabIndex = 21;
@@ -384,6 +473,26 @@ namespace NetworkScanner
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Color:";
             // 
+            // ColorDifferentHistory
+            // 
+            this.ColorDifferentHistory.BackColor = System.Drawing.Color.Orange;
+            this.ColorDifferentHistory.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.ColorDifferentHistory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ColorDifferentHistory.Location = new System.Drawing.Point(104, 103);
+            this.ColorDifferentHistory.Name = "ColorDifferentHistory";
+            this.ColorDifferentHistory.Size = new System.Drawing.Size(19, 18);
+            this.ColorDifferentHistory.TabIndex = 22;
+            this.ColorDifferentHistory.TabStop = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(18, 105);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(42, 13);
+            this.label11.TabIndex = 21;
+            this.label11.Text = "History:";
+            // 
             // ColorPortAlive
             // 
             this.ColorPortAlive.BackColor = System.Drawing.Color.Lime;
@@ -464,9 +573,9 @@ namespace NetworkScanner
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(18, 38);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(54, 13);
+            this.label5.Size = new System.Drawing.Size(84, 13);
             this.label5.TabIndex = 14;
-            this.label5.Text = "Has ARP:";
+            this.label5.Text = "Only ARP/DNS:";
             // 
             // saveFileDialog1
             // 
@@ -483,31 +592,11 @@ namespace NetworkScanner
             this.openFileDialog1.InitialDirectory = ".\\";
             this.openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog1_FileOk);
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(18, 105);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(85, 13);
-            this.label11.TabIndex = 21;
-            this.label11.Text = "Different History:";
-            // 
-            // ColorDifferentHistory
-            // 
-            this.ColorDifferentHistory.BackColor = System.Drawing.Color.Orange;
-            this.ColorDifferentHistory.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ColorDifferentHistory.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ColorDifferentHistory.Location = new System.Drawing.Point(104, 103);
-            this.ColorDifferentHistory.Name = "ColorDifferentHistory";
-            this.ColorDifferentHistory.Size = new System.Drawing.Size(19, 18);
-            this.ColorDifferentHistory.TabIndex = 22;
-            this.ColorDifferentHistory.TabStop = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(372, 613);
+            this.ClientSize = new System.Drawing.Size(372, 621);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -517,6 +606,8 @@ namespace NetworkScanner
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
@@ -524,11 +615,11 @@ namespace NetworkScanner
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorPortAlive)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorPingSuccess)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorHasARP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ColorNotExist)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ColorDifferentHistory)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -544,7 +635,6 @@ namespace NetworkScanner
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numericUpDown2;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
@@ -571,6 +661,15 @@ namespace NetworkScanner
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.PictureBox ColorDifferentHistory;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
