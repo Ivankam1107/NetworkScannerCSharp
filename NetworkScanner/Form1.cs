@@ -20,14 +20,30 @@ namespace NetworkScanner
     public partial class Form1 : Form
     {
         public static Label[] labels;
-        public static ToolTip[] tooltips;
+        public static ToolTip[] toolTips;
         private string result;
         public static Color CNotExist, CHasArp, CPingSuccess, CPortAlive, CDifferentHistory;
         public static int PingTimeout, PortTimeout;
         public static List<int> portList;
-        public Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>> HISTORY;
-        public static Dictionary<string, Dictionary<string, SortedSet<dynamic>>> CURRENT;
-        public static Dictionary<string, Dictionary<string, SortedSet<dynamic>>> SUBNET;
+        /*public Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>> HISTORY;
+        public static Dictionary<string, Dictionary<string, SortedSet<dynamic>>> CURRENT;*/
+        public class JsonClass
+        {
+            public string IP { get; set; }
+            public string Mac { get; set; }
+            public string Hostname { get; set; }
+            public SortedSet<int> AlivePort { get; set; }
+            public string Lastseen { get; set; }
+            public JsonClass(string ip)
+            {
+                IP = ip;
+                Mac = "";
+                Hostname = "";
+                AlivePort = new SortedSet<int>();
+                Lastseen = "";
+            }
+        }
+        public static HashSet<JsonClass> HISTORY, CURRENT;
         public static string subnet;
         public static string dnsServerIP;
         public static string Status;
@@ -35,11 +51,11 @@ namespace NetworkScanner
         {
             InitializeComponent();
             labels = new Label[256];
-            tooltips = new ToolTip[256];
+            toolTips = new ToolTip[256];
             for (int i = 0; i < 256; i++)
             {
                 labels[i] = new Label();
-                tooltips[i] = new ToolTip();
+                toolTips[i] = new ToolTip();
                 /*existIPs.Add(new ExistIP());*/
                 labels[i].Text = i.ToString();
                 labels[i].Location = new Point(28 + i % 10 * 30, 10 + (i / 10) * 20); // for example
@@ -48,28 +64,40 @@ namespace NetworkScanner
             }
             textBox3.Text = GetDnsAdress();
             tabControl1.TabPages[0].Controls.AddRange(labels);
+            Resize();
+            this.Size = new Size(this.Width, tabControl1.Location.Y + tabControl1.Height + 50);
             init();
             textBox1.Select();
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            init();
             string ip = textBox1.Text;
             subnet = IPPrefix(ip);
+            init();
             for (int i = 0; i < 256; i++)
             {
                 PingScan.failIPs.Add(subnet + i.ToString());
             }
-            GetSubnetHistory(ip);
+            label14.ForeColor = Color.Red;
+            Status = "Ping";
+            label14.Text = Status;
             if (checkBox1.Checked) new PingScan();
+            Status = "Port Scan";
+            label14.Text = Status;
             if (checkBox2.Checked) new PortScan();
+            Status = "Hostname Lookup";
+            label14.Text = Status;
             if (checkBox3.Checked) new DNSScan();
             result = IPPrefix(ip);
+            Status = "Finish";
+            label14.ForeColor = Color.Lime;
+            label14.Text = Status;
         }
-
+       
         private void init()
         {
             Status = "Init";
+            label14.Text = Status;
             CNotExist = ColorNotExist.BackColor;
             CHasArp = ColorHasARP.BackColor;
             CPingSuccess = ColorPingSuccess.BackColor;
@@ -79,14 +107,14 @@ namespace NetworkScanner
             PortTimeout = Convert.ToInt32(numericUpDown2.Value);
             dnsServerIP = textBox3.Text;
             PingScan.failIPs = new List<string>();
-            HISTORY = new Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>();
-            CURRENT = new Dictionary<string, Dictionary<string, SortedSet<dynamic>>>();
+            HISTORY = new HashSet<JsonClass>();
+            CURRENT = new HashSet<JsonClass>();
             if (File.Exists(textBox2.Text))
             {
                 try
                 {
                     string json = File.ReadAllText(textBox2.Text);
-                    HISTORY = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>>(json);
+                    HISTORY = JsonConvert.DeserializeObject<Dictionary<string, HashSet<JsonClass>>>(json)[subnet];
                 }
                 catch
                 {
@@ -103,73 +131,10 @@ namespace NetworkScanner
             {
                 label.BackColor = DefaultBackColor;
             }
-            for (int i = 0; i < 256; i++)
-            {
-                tooltips[i].Dispose();
-                tooltips[i] = new ToolTip();
-            }
 
         }
-        public void GetSubnetHistory(string ip)
-        {
-            try
-            {
-                SUBNET = HISTORY[subnet];
-            }
-            catch
-            {
-                SUBNET = new Dictionary<string, Dictionary<string, SortedSet<dynamic>>>();
-            }
-            Console.WriteLine(JsonConvert.SerializeObject(SUBNET));
-        }
-
         public void MergeCurrHistory(string ip)
         {
-            //Current For Test
-            //string tempJson = "{\"192.168.1.2\":{\"Hostname\":[\"iamhost\"],\"PortAlive\":[22,4431]}}";
-            //CURRENT = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, SortedSet<dynamic>>>>(tempJson);
-            ////////////////////////////
-            try
-            {
-                HISTORY.Add(subnet, new Dictionary<string, Dictionary<string, SortedSet<dynamic>>>());
-            }
-            catch
-            {
-
-            }
-            foreach (string IP in CURRENT.Keys)
-            {
-                try
-                {
-                    HISTORY[subnet].Add(IP, new Dictionary<string, SortedSet<dynamic>>());
-                }
-                catch
-                {
-
-                }
-                foreach (string Key in CURRENT[IP].Keys)
-                {
-                    try
-                    {
-                        HISTORY[subnet][IP].Add(Key, new SortedSet<dynamic>());
-                    }
-                    catch
-                    {
-
-                    }
-                    foreach (var value in CURRENT[IP][Key])
-                    {
-                        try
-                        {
-                            HISTORY[subnet][IP][Key].Add(value);
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                }
-            }
             try
             {
                 File.WriteAllText(textBox2.Text, JsonConvert.SerializeObject(HISTORY));
@@ -239,11 +204,6 @@ namespace NetworkScanner
                     listBox1.Items.RemoveAt(idx);
                 }
             }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
@@ -346,6 +306,21 @@ namespace NetworkScanner
             }
 
         }
+
+        private void Resize()
+        {
+            textBox1.Location = new Point(6, labels[250].Location.Y+18);
+            button1.Location = new Point(button1.Location.X, textBox1.Location.Y);
+            label14.Location = new Point(label14.Location.X, textBox1.Location.Y);
+            ////////////////////////////////////////////////////////////////////////////
+            checkBox1.Location = new Point(34, textBox1.Location.Y + 23);
+            checkBox2.Location = new Point(checkBox2.Location.X,checkBox1.Location.Y);
+            checkBox3.Location = new Point(checkBox3.Location.X, checkBox1.Location.Y);
+            textBox3.Location = new Point(textBox3.Location.X,checkBox1.Location.Y);
+            tabControl1.Size = new Size(
+                labels[9].Location.X+2*labels[9].Width+labels[0].Location.X,
+                checkBox1.Location.Y+checkBox1.Height*2+labels[0].Location.Y+10);
+        }
         private bool openConfig()
         {
             try
@@ -401,73 +376,107 @@ namespace NetworkScanner
                 listBox1.Items.RemoveAt(idx);
             }
         }
+        public static string s_lockObject = "";
         public static void DisplayTips(string ip="")
         {
+            
             int tag = Convert.ToInt32(ip.ToString().Split('.')[3]);
             string tips = "";
-            if (!SUBNET.ContainsKey(ip) && CURRENT.ContainsKey(ip))
+            JsonClass curr;
+            lock (s_lockObject)
+            {
+                curr = CURRENT.FirstOrDefault(x => x.IP == ip);
+            }
+            
+            List<JsonClass> historys = HISTORY.Where(x => x.IP == ip).ToList();
+            int hostnameMaxLen = 8, alivePortMaxLen=11; 
+            int tempLength;
+            if (curr != null && historys.Count==0)
             {
                 //show curr[ip] info
-                labels[tag].BackColor = CPingSuccess;
-                if (CURRENT[ip].ContainsKey("Mac"))
+                if (Status == "Ping")
                 {
-                    labels[tag].BackColor = CHasArp;
-                    tips += String.Format("{0}", CURRENT[ip]["Mac"].ElementAt(0))+"\r\n";
+                    labels[tag].BackColor = CPingSuccess;
+                    return;
                 }
-                if (CURRENT[ip].ContainsKey("Hostname"))
-                {
-                    labels[tag].BackColor = CHasArp;
-                    tips += String.Format("{0}", CURRENT[ip]["Hostname"].ElementAt(0)) + "\r\n";
-                }
-                if (CURRENT[ip].ContainsKey("PortAlive"))
-                {
-                    labels[tag].BackColor = CPortAlive;
-                    tips += String.Format("Alive Ports:{0}", JsonConvert.SerializeObject(CURRENT[ip]["PortAlive"]));
-                }
-
+                tempLength = curr.Hostname.Length;
+                if (hostnameMaxLen < tempLength) hostnameMaxLen = tempLength;
+                tempLength = GetAlivePorts(curr.AlivePort).Length;
+                if (alivePortMaxLen < tempLength) alivePortMaxLen = tempLength;
+                tips += String.Format("{4,1}| {0,-17} | {1,-" + hostnameMaxLen + "} | {2,-" + alivePortMaxLen + "} | {3,-19} |\r\n", curr.Mac, curr.Hostname, GetAlivePorts(curr.AlivePort), curr.Lastseen, "*");
+                if(curr.AlivePort.Count>0) labels[tag].BackColor = CPortAlive;
             }
-            else if(SUBNET.ContainsKey(ip) && !CURRENT.ContainsKey(ip))
+            else if (curr == null && historys.Count != 0)
             {
                 //show sub[ip] info
                 labels[tag].BackColor = CDifferentHistory;
-                tips = "History:\r\n";
-                if (SUBNET[ip].ContainsKey("Mac"))
+                tempLength = historys.Select(x => x.Hostname.Length).Max();
+                if (hostnameMaxLen < tempLength) hostnameMaxLen = tempLength;
+                tempLength = historys.Select(x => GetAlivePorts(x.AlivePort).Length).Max();
+                if (alivePortMaxLen < tempLength) alivePortMaxLen = tempLength;
+                foreach(JsonClass history in historys)
                 {
-                    tips += String.Format("  {0}", JsonConvert.SerializeObject(SUBNET[ip]["Mac"])) + "\r\n";
-                }
-                if (SUBNET[ip].ContainsKey("Hostname"))
-                {
-                    tips += String.Format("  {0}", JsonConvert.SerializeObject(SUBNET[ip]["Hostname"])) + "\r\n";
-                }
-                if (SUBNET[ip].ContainsKey("PortAlive"))
-                {
-                    tips += String.Format("  Alive Ports:{0}", JsonConvert.SerializeObject(SUBNET[ip]["PortAlive"]));
+                    tips += String.Format("{4,1}| {0,-17} | {1,-" + hostnameMaxLen + "} | {2,-" + alivePortMaxLen + "} | {3,-19} |\r\n", history.Mac, history.Hostname, GetAlivePorts(history.AlivePort), history.Lastseen, "");
                 }
             }
-            else if(SUBNET.ContainsKey(ip) && CURRENT.ContainsKey(ip))
+            else if (curr != null && historys.Count != 0)
             {
-                //Compare
-                if((CURRENT[ip].ContainsKey("Mac") && SUBNET[ip].ContainsKey("Mac")) || (CURRENT[ip].ContainsKey("Hostname") && SUBNET[ip].ContainsKey("Hostname")) || (CURRENT[ip].ContainsKey("PortAlive") && SUBNET[ip].ContainsKey("PortAlive")))
+                
+                /*int hostnameMaxLen = 8, alivePortMaxLen = 11;
+                int tempLength;*/
+                tempLength = historys.Select(x => x.Hostname.Length).Max();
+                if (hostnameMaxLen < tempLength) hostnameMaxLen = tempLength;
+                tempLength = historys.Select(x => GetAlivePorts(x.AlivePort).Length).Max();
+                if (alivePortMaxLen < tempLength) alivePortMaxLen = tempLength;
+                if(!historys.Select(x=>x.Hostname).Contains(curr.Hostname)) labels[tag].BackColor = CDifferentHistory;
+                foreach(SortedSet<int> alivePorts in historys.Select(x => x.AlivePort))
                 {
-                    labels[tag].BackColor = CDifferentHistory;
-                    tips = ShowDiif(ip);
+                    if (!curr.AlivePort.Except(alivePorts).Any()) labels[tag].BackColor = CDifferentHistory;
                 }
+                tips += String.Format("{4,1}| {0,-17} | {1,-" + hostnameMaxLen + "} | {2,-" + alivePortMaxLen + "} | {3,-19} |\r\n", curr.Mac, curr.Hostname, GetAlivePorts(curr.AlivePort), curr.Lastseen, "*");
+                foreach (JsonClass history in historys)
+                {
+                    tips += String.Format("{4,1}| {0,-17} | {1,-" + hostnameMaxLen + "} | {2,-" + alivePortMaxLen + "} | {3,-19} |\r\n", history.Mac, history.Hostname, GetAlivePorts(history.AlivePort), history.Lastseen, "");
+                }
+                
+                //compare
+                //MessageBox.Show(ip);
             }
             else
             {
                 return;
             }
+            if (labels[tag].BackColor == CPingSuccess) return;
+            tips = String.Format("{4,1}| {0,-17} | {1,-" + hostnameMaxLen + "} | {2,-" + alivePortMaxLen + "} | {3,-19} |\r\n", "Mac Address", "Hostname","Alive Ports" ,"Last Seen","*")+tips;
+            toolTips[tag].OwnerDraw = true;
+            toolTips[tag].Draw += new DrawToolTipEventHandler(toolTip1_Draw);
+            toolTips[tag].Popup += new PopupEventHandler(toolTip1_Popup);
+            toolTips[tag].UseAnimation = true;
+            toolTips[tag].AutoPopDelay = 500;
+            toolTips[tag].AutomaticDelay = 500;
             Form1.labels[tag].BeginInvoke((MethodInvoker)delegate
             {
-                tooltips[tag].SetToolTip(Form1.labels[tag], tips);
+                toolTips[tag].SetToolTip(labels[tag], tips);
             });
+            void toolTip1_Popup(object sender, PopupEventArgs e)
+            {
+                // on popip set the size of tool tip
+                e.ToolTipSize = TextRenderer.MeasureText(tips, new Font("Courier New", 8.0f));
+            }
+            void toolTip1_Draw(object sender, DrawToolTipEventArgs e)
+            {
+                Font f = new Font("Courier New", 8.0f);
+                e.DrawBackground();
+                e.DrawBorder();
+                tips = e.ToolTipText;
+                e.Graphics.DrawString(e.ToolTipText, f, Brushes.Black, new PointF(2, 2));
+            }
         }
-        private static string ShowDiif(string ip="")
+        
+        private static string GetAlivePorts(SortedSet<int> ports)
         {
-            string tips="";
-
-            
-            return tips;
+            string alivePorts = JsonConvert.SerializeObject(ports).Replace("[", "]").Replace("]", "");
+            return alivePorts;
         }
     }
 }

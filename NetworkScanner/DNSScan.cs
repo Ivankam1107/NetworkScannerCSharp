@@ -11,7 +11,7 @@ namespace NetworkScanner
 {
     class DNSScan
     {
-        private List<Thread> threads;
+        List<Thread> threads;
         public static void DNS(object args)
         {
             string ip = args as string;
@@ -22,9 +22,8 @@ namespace NetworkScanner
                 IPHostEntry iPHost = resolver.GetHostEntry(ip);  
                 if (iPHost.HostName != null)
                 {
-                    if (!Form1.CURRENT.ContainsKey(ip)) Form1.CURRENT.Add(ip, new Dictionary<string, SortedSet<dynamic>>());
-                    if (!Form1.CURRENT[ip].ContainsKey("Hostname")) Form1.CURRENT[ip].Add("Hostname", new SortedSet<dynamic>());
-                    Form1.CURRENT[ip]["Hostname"].Add(iPHost.HostName);
+                    if (Form1.CURRENT.FirstOrDefault(x => x.IP == ip) == null) Form1.CURRENT.Add(new Form1.JsonClass(ip));
+                    Form1.CURRENT.First(x => x.IP == ip).Hostname = iPHost.HostName;
                     Form1.DisplayTips(ip);
                 } 
             }
@@ -37,18 +36,18 @@ namespace NetworkScanner
         {
             Form1.Status = "Dns";
             threads = new List<Thread>();
-            foreach(string ip in Form1.CURRENT.Keys)
+            Parallel.ForEach(Form1.CURRENT.Select(x => x.IP).ToList(), ip =>
             {
                 Thread thread = new Thread(DNS);
                 threads.Add(thread);
                 thread.Start(ip);
-            }
-            foreach (string ip in PingScan.failIPs)
+            });
+            Parallel.ForEach(PingScan.failIPs, ip =>
             {
                 Thread thread = new Thread(DNS);
                 threads.Add(thread);
                 thread.Start(ip);
-            }
+            });
         }
     }
 }
