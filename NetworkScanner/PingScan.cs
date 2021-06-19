@@ -16,6 +16,10 @@ namespace NetworkScanner
         private static object s_lockObject = "";
         private void Ping(object args)
         {
+           /* lock (s_lockObject)
+            {
+                pingThreads.Add(Thread.CurrentThread);
+            } */
             string ip = args as string;
             Ping ping = new Ping();
             PingReply pingReply = ping.Send(ip, Form1.PingTimeout);
@@ -25,7 +29,7 @@ namespace NetworkScanner
                 {
                     lock (s_lockObject)
                     {
-                        Form1.CURRENT.Add(ip, new Dictionary<string, SortedSet<dynamic>>());
+                        Form1.CURRENT.Add(new Form1.JsonClass(ip));
                     }
                 }
                 catch
@@ -34,28 +38,32 @@ namespace NetworkScanner
                 }
             }
             Form1.DisplayTips(ip);
+            /*lock (s_lockObject)
+            {
+                pingThreads.Remove(Thread.CurrentThread);
+            }*/
         }
         
         public PingScan()
         {
-            Form1.Status = "Ping";
             pingThreads = new List<Thread>();
-            foreach(string ip in failIPs)
+            Parallel.ForEach(failIPs, ip =>
             {
                 Thread thread = new Thread(Ping);
                 pingThreads.Add(thread);
                 thread.Start(ip.ToString());
-            }
+            });
             foreach (Thread t in pingThreads)
             {
                 t?.Join();
             }
-            foreach(string ip in Form1.CURRENT.Keys)
-            {
-                failIPs.Remove(ip);
-            }
+            failIPs = failIPs.Except(Form1.CURRENT.Select(x => x.IP).ToList()).ToList();
             Console.WriteLine(JsonConvert.SerializeObject(Form1.CURRENT));
-
+            /*while (true)
+            {
+                Console.WriteLine(pingThreads.Count);
+            }*/
+            
         }
     }
 }
